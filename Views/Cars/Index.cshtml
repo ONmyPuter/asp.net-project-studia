@@ -1,0 +1,26 @@
+@model IEnumerable<Car>
+
+<h2>Lista samochodów</h2>
+
+<p>
+    <a asp-action="Create">Dodaj nowy samochód</a>
+</p>
+
+<table border="1">
+    <tr>
+        <th>Marka</th>
+        <th>Model</th>
+        <th>Miejsca</th>
+        <th>Dostępny</th>
+    </tr>
+
+@foreach (var car in Model)
+{
+    <tr>
+        <td>@car.Brand</td>
+        <td>@car.Model</td>
+        <td>@car.Seats</td>
+        <td>@car.IsAvailable</td>
+    </tr>
+}
+</table>

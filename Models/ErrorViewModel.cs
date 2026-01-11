@@ -1,8 +1,8 @@
-namespace CarReservationSystemApp.Models;
-
-public class ErrorViewModel
+namespace CarReservationSystemApp
 {
-    public string? RequestId { get; set; }
-
-    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    public class ErrorViewModel
+    {
+        public string? RequestId { get; set; }
+        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    }
 }

@@ -1,0 +1,33 @@
+@model Car
+
+<h2>Dodaj samochód</h2>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label>Marka</label><br />
+        <input asp-for="Brand" />
+        <span asp-validation-for="Brand"></span>
+    </div>
+
+    <div>
+        <label>Model</label><br />
+        <input asp-for="Model" />
+        <span asp-validation-for="Model"></span>
+    </div>
+
+    <div>
+        <label>Liczba miejsc</label><br />
+        <input asp-for="Seats" type="number" />
+    </div>
+
+    <div>
+        <label>Dostępny</label>
+        <input asp-for="IsAvailable" type="checkbox" />
+    </div>
+
+    <button type="submit">Zapisz</button>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

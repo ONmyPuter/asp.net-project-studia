@@ -1,0 +1,28 @@
+@model CarReservationSystemApp.Reservation
+
+<h2>Dodaj rezerwację</h2>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label>Samochód</label><br />
+        <select asp-for="CarId" asp-items="ViewBag.Cars"></select>
+    </div>
+
+    <div>
+        <label>Od</label><br />
+        <input asp-for="From" type="date" />
+        <span asp-validation-for="From"></span>
+    </div>
+
+    <div>
+        <label>Do</label><br />
+        <input asp-for="To" type="date" />
+        <span asp-validation-for="To"></span>
+    </div>
+
+    <button type="submit">Zapisz</button>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
