@@ -1,0 +1,27 @@
+@model IEnumerable<Reservation>
+
+<h2>Reservations</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">
+    Add reservation
+</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Car</th>
+            <th>From</th>
+            <th>To</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var r in Model)
+{
+        <tr>
+            <td>@r.Car?.Brand</td>
+            <td>@r.From.ToShortDateString()</td>
+            <td>@r.To.ToShortDateString()</td>
+        </tr>
+}
+    </tbody>
+</table>

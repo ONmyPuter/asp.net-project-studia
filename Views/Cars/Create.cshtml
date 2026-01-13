@@ -1,32 +1,48 @@
 @model Car
 
-<h2>Dodaj samochód</h2>
+<h2 class="mb-4">Dodaj samochód</h2>
 
-<form asp-action="Create" method="post">
-    <div>
-        <label>Marka</label><br />
-        <input asp-for="Brand" />
-        <span asp-validation-for="Brand"></span>
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <form asp-action="Create" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Marka</label>
+                <input asp-for="Brand" class="form-control" placeholder="np. Toyota" />
+                <span asp-validation-for="Brand" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Model</label>
+                <input asp-for="Model" class="form-control" placeholder="np. Corolla" />
+                <span asp-validation-for="Model" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Liczba miejsc</label>
+                <input asp-for="Seats" type="number" class="form-control" min="1" max="9" />
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="IsAvailable" class="form-check-input" />
+                <label class="form-check-label">
+                    Dostępny do rezerwacji
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                💾 Zapisz samochód
+            </button>
+
+            <a asp-action="Index" class="btn btn-secondary ms-2">
+                Anuluj
+            </a>
+
+        </form>
+
     </div>
-
-    <div>
-        <label>Model</label><br />
-        <input asp-for="Model" />
-        <span asp-validation-for="Model"></span>
-    </div>
-
-    <div>
-        <label>Liczba miejsc</label><br />
-        <input asp-for="Seats" type="number" />
-    </div>
-
-    <div>
-        <label>Dostępny</label>
-        <input asp-for="IsAvailable" type="checkbox" />
-    </div>
-
-    <button type="submit">Zapisz</button>
-</form>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -25,7 +25,19 @@ namespace CarReservationSystemApp.Controllers
         // FORMULARZ
         public IActionResult Create()
         {
-            ViewBag.Cars = new SelectList(_context.Cars, "Id", "Brand");
+           ViewBag.Cars = _context.Cars
+    .Select(c => new
+    {
+        c.Id,
+        Display = c.Brand + " " + c.Model
+    })
+    .Select(c => new SelectListItem
+    {
+        Value = c.Id.ToString(),
+        Text = c.Display
+    })
+    .ToList();
+
             return View();
         }
 

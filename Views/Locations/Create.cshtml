@@ -1,0 +1,17 @@
+@model Location
+
+<h2>Dodaj lokalizację</h2>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label>Miasto</label><br />
+        <input asp-for="City" />
+        <span asp-validation-for="City"></span>
+    </div>
+
+    <button type="submit">Zapisz</button>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

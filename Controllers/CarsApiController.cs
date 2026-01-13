@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CarReservationSystemApp
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/cars")]
     public class CarsApiController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -14,49 +14,92 @@ namespace CarReservationSystemApp
             _context = context;
         }
 
-        // GET: api/CarsApi
+        // GET: api/cars
+        // Zwraca wszystkie dostępne auta
         [HttpGet]
-        public async Task<IActionResult> GetCars()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(await _context.Cars.ToListAsync());
+            var cars = await _context.Cars
+                .Where(c => c.IsAvailable)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Brand,
+                    c.Model,
+                    c.Seats
+                })
+                .ToListAsync();
+
+            return Ok(cars);
         }
 
-        // GET: api/CarsApi/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCar(int id)
+        // GET: api/cars/5
+        // Szczegóły jednego auta
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var car = await _context.Cars.FindAsync(id);
+            var car = await _context.Cars
+                .Where(c => c.Id == id)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.Brand,
+                    c.Model,
+                    c.Seats,
+                    c.IsAvailable
+                })
+                .FirstOrDefaultAsync();
+
             if (car == null)
                 return NotFound();
 
             return Ok(car);
         }
 
-        // POST: api/CarsApi
+        // POST: api/cars
+        // Dodawanie auta (admin)
         [HttpPost]
-        public async Task<IActionResult> CreateCar(Car car)
+        public async Task<IActionResult> Create([FromBody] Car car)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             _context.Cars.Add(car);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetCar), new { id = car.Id }, car);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = car.Id },
+                car
+            );
         }
 
-        // PUT: api/CarsApi/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCar(int id, Car car)
+        // PUT: api/cars/5
+        // Aktualizacja auta
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Car updatedCar)
         {
-            if (id != car.Id)
-                return BadRequest();
+            if (id != updatedCar.Id)
+                return BadRequest("Id w URL i obiekcie nie są zgodne.");
 
-            _context.Entry(car).State = EntityState.Modified;
+            var car = await _context.Cars.FindAsync(id);
+            if (car == null)
+                return NotFound();
+
+            car.Brand = updatedCar.Brand;
+            car.Model = updatedCar.Model;
+            car.Seats = updatedCar.Seats;
+            car.IsAvailable = updatedCar.IsAvailable;
+
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // DELETE: api/CarsApi/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCar(int id)
+        // DELETE: api/cars/5
+        // Usuwanie auta
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
         {
             var car = await _context.Cars.FindAsync(id);
             if (car == null)

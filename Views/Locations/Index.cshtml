@@ -1,0 +1,21 @@
+@model IEnumerable<Location>
+
+<h2>Lokalizacje</h2>
+
+<a asp-action="Create">Dodaj lokalizację</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Miasto</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var l in Model)
+{
+        <tr>
+            <td>@l.City</td>
+        </tr>
+}
+    </tbody>
+</table>
