@@ -1,16 +1,50 @@
 @model Location
 
-<h2>Dodaj lokalizację</h2>
+@{
+    ViewData["Title"] = "Dodaj lokalizację";
+}
 
-<form asp-action="Create" method="post">
-    <div>
-        <label>Miasto</label><br />
-        <input asp-for="City" />
-        <span asp-validation-for="City"></span>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Dodaj nową lokalizację</h2>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg>
+                Powrót
+            </a>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="mb-4">
+                        <label asp-for="City" class="form-label fw-bold">Miasto</label>
+                        <input asp-for="City" class="form-control form-control-lg" placeholder="np. Warszawa, Kraków, Gdańsk" />
+                        <small class="form-text text-muted">Wprowadź nazwę miasta, w którym znajduje się punkt odbioru</small>
+                        <span asp-validation-for="City" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            Anuluj
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                <path d="m10.97 4.97-.02.022a.75.75 0 1 0 1.043 1.043l1.02-1.021a.75.75 0 0 0-1.042-1.042l-.998.999M11.99 8.99l-3.5-3.503a.75.75 0 0 0-1.05.024l-2 2a.75.75 0 0 0 .024 1.05l3.5 3.503a.75.75 0 0 0 1.05-.024l2-2a.75.75 0 0 0-.024-1.05"/>
+                            </svg>
+                            Zapisz lokalizację
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <button type="submit">Zapisz</button>
-</form>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

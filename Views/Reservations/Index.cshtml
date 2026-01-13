@@ -1,27 +1,100 @@
 @model IEnumerable<Reservation>
 
-<h2>Reservations</h2>
-
-<a asp-action="Create" class="btn btn-primary mb-3">
-    Add reservation
-</a>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Car</th>
-            <th>From</th>
-            <th>To</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var r in Model)
-{
-        <tr>
-            <td>@r.Car?.Brand</td>
-            <td>@r.From.ToShortDateString()</td>
-            <td>@r.To.ToShortDateString()</td>
-        </tr>
+@{
+    ViewData["Title"] = "Rezerwacje";
 }
-    </tbody>
-</table>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Lista rezerwacji</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+        </svg>
+        Nowa rezerwacja
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading">Brak rezerwacji</h4>
+        <p>Obecnie nie ma żadnych rezerwacji w systemie.</p>
+        <hr>
+        <p class="mb-0">
+            <a asp-action="Create" class="btn btn-primary">Utwórz pierwszą rezerwację</a>
+        </p>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Samochód</th>
+                            <th scope="col">Data rozpoczęcia</th>
+                            <th scope="col">Data zakończenia</th>
+                            <th scope="col">Czas trwania</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reservation in Model)
+                        {
+                            var duration = (reservation.To.Date - reservation.From.Date).Days;
+                            var isPast = reservation.To.Date < DateTime.Today;
+                            var isCurrent = reservation.From.Date <= DateTime.Today && reservation.To.Date >= DateTime.Today;
+                            
+                            <tr>
+                                <td>
+                                    <span class="text-muted">#@reservation.Id</span>
+                                </td>
+                                <td>
+                                    <strong>@(reservation.Car?.Brand ?? "Brak") @(reservation.Car?.Model ?? "")</strong>
+                                    @if (reservation.Car != null)
+                                    {
+                                        <br>
+                                        <small class="text-muted">
+                                            @reservation.Car.Seats miejsc, 
+                                            @if (!string.IsNullOrEmpty(reservation.Car.FuelType))
+                                            {
+                                                <text>@reservation.Car.FuelType</text>
+                                            }
+                                        </small>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">@reservation.From.Date.ToString("dd.MM.yyyy")</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">@reservation.To.Date.ToString("dd.MM.yyyy")</span>
+                                </td>
+                                <td>
+                                    <span class="text-muted">@duration @(duration == 1 ? "dzień" : "dni")</span>
+                                </td>
+                                <td>
+                                    @if (isPast)
+                                    {
+                                        <span class="badge bg-secondary">Zakończona</span>
+                                    }
+                                    else if (isCurrent)
+                                    {
+                                        <span class="badge bg-info">W trakcie</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Nadchodząca</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}

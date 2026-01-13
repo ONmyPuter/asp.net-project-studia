@@ -1,8 +1,70 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Strona główna";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="hero-section bg-primary text-white py-5 mb-5 rounded">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">Wypożyczalnia Samochodów</h1>
+                <p class="lead mb-4">Znajdź idealny samochód na swoją podróż. Szeroka gama pojazdów, konkurencyjne ceny i profesjonalna obsługa.</p>
+                <a asp-controller="Cars" asp-action="Index" class="btn btn-light btn-lg me-2">
+                    Przeglądaj samochody
+                </a>
+                <a asp-controller="Reservations" asp-action="Create" class="btn btn-outline-light btn-lg">
+                    Zarezerwuj teraz
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-car-front text-primary" viewBox="0 0 16 16">
+                            <path d="M4 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0m6 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                            <path d="M4.862 3.276A.5.5 0 0 1 5 3h6a.5.5 0 0 1 .447.276L12.81 7H14.5a.5.5 0 0 1 .5.5v.5a.5.5 0 0 1-.5.5H14v4.5a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V12H6v.5a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V8.5H1.5a.5.5 0 0 1-.5-.5V7.5a.5.5 0 0 1 .5-.5h1.69zM3 4.5A1.5 1.5 0 0 0 1.5 6v.5h13V6A1.5 1.5 0 0 0 13 4.5H3z"/>
+                        </svg>
+                    </div>
+                    <h4 class="card-title">Szeroka flota</h4>
+                    <p class="card-text">Wybierz z naszej bogatej oferty samochodów osobowych, od ekonomicznych po luksusowe modele.</p>
+                    <a asp-controller="Cars" asp-action="Index" class="btn btn-primary">Zobacz samochody</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-geo-alt text-success" viewBox="0 0 16 16">
+                            <path d="M12.166 8.94c-.524 1.137-1.97 2.538-3.937 3.94-1.968-1.402-3.413-2.803-3.937-3.94C3.548 7.77 3 6.523 3 5.5 3 3.57 4.57 2 6.5 2S10 3.57 10 5.5c0 1.023-.548 2.27-1.834 3.44M10 5.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0"/>
+                            <path d="M8 1a4 4 0 0 0-4 4v.217l4 1.429 4-1.429V5a4 4 0 0 0-4-4M4.5 5a3.5 3.5 0 0 1 7 0v.217L8 6.5 4.5 5.217z"/>
+                        </svg>
+                    </div>
+                    <h4 class="card-title">Wiele lokalizacji</h4>
+                    <p class="card-text">Odbierz samochód w wygodnej dla Ciebie lokalizacji. Punkty odbioru w całym kraju.</p>
+                    <a asp-controller="Locations" asp-action="Index" class="btn btn-success">Zobacz lokalizacje</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-calendar-check text-info" viewBox="0 0 16 16">
+                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+                            <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793z"/>
+                        </svg>
+                    </div>
+                    <h4 class="card-title">Łatwa rezerwacja</h4>
+                    <p class="card-text">Zarezerwuj samochód online w kilka minut. Sprawdź dostępność i wybierz najlepszy termin.</p>
+                    <a asp-controller="Reservations" asp-action="Create" class="btn btn-info text-white">Zarezerwuj</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

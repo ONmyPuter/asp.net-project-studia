@@ -33,9 +33,11 @@ namespace CarReservationSystemApp.Controllers
             {
                 _context.Locations.Add(location);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Lokalizacja w mieście {location.City} została dodana pomyślnie!";
                 return RedirectToAction(nameof(Index));
             }
 
+            TempData["ErrorMessage"] = "Wystąpiły błędy podczas dodawania lokalizacji. Sprawdź wprowadzone dane.";
             return View(location);
         }
     }

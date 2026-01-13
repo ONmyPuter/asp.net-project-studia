@@ -1,26 +1,104 @@
 @model IEnumerable<Car>
+@using CarReservationSystemApp
 
-<h2>Lista samochodów</h2>
-
-<p>
-    <a asp-action="Create">Dodaj nowy samochód</a>
-</p>
-
-<table border="1">
-    <tr>
-        <th>Marka</th>
-        <th>Model</th>
-        <th>Miejsca</th>
-        <th>Dostępny</th>
-    </tr>
-
-@foreach (var car in Model)
-{
-    <tr>
-        <td>@car.Brand</td>
-        <td>@car.Model</td>
-        <td>@car.Seats</td>
-        <td>@car.IsAvailable</td>
-    </tr>
+@{
+    ViewData["Title"] = "Samochody";
 }
-</table>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Nasza flota samochodów</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+        </svg>
+        Dodaj samochód
+    </a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-heading">Brak samochodów</h4>
+        <p>Obecnie nie ma dostępnych samochodów w systemie.</p>
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var car in Model)
+        {
+            var pricePerDay = CarsController.GetPricePerDay(car);
+            var description = CarsController.GetCarDescription(car);
+            
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="card-title mb-1">@car.Brand @car.Model</h5>
+                                <p class="text-muted small mb-0">ID: @car.Id</p>
+                            </div>
+                            @if (car.IsAvailable)
+                            {
+                                <span class="badge bg-success">Dostępny</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Niedostępny</span>
+                            }
+                        </div>
+                        
+                        <div class="mb-3">
+                            <p class="card-text mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people" viewBox="0 0 16 16">
+                                    <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.629 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.024.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A3 3 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"/>
+                                </svg>
+                                <strong>Liczba miejsc:</strong> @car.Seats
+                            </p>
+                            
+                            @if (!string.IsNullOrEmpty(car.FuelType))
+                            {
+                                <p class="card-text mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fuel-pump" viewBox="0 0 16 16">
+                                        <path d="M3 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1-.5-.5z"/>
+                                        <path d="M1 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2zm2.5 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3m2 4.5V9a.5.5 0 0 0-1 0v1.5a.5.5 0 0 0 1 0m-3 0V9a.5.5 0 0 0-1 0v1.5a.5.5 0 0 0 1 0"/>
+                                    </svg>
+                                    <strong>Rodzaj paliwa:</strong> @car.FuelType
+                                </p>
+                            }
+                            
+                            @if (!string.IsNullOrEmpty(car.Transmission))
+                            {
+                                <p class="card-text mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                                        <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
+                                        <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a.873.873 0 0 0 1.255.52l.292-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a.873.873 0 0 0 .52 1.255l.319.094c.835.246.835 1.428 0 1.674l-.319.094a.873.873 0 0 0-.52 1.255l.16.292c.415.764-.42 1.6-1.185 1.184l-.292-.159a.873.873 0 0 0-1.255.52l-.094.319c-.246.835-1.428.835-1.674 0l-.094-.319a.873.873 0 0 0-1.255-.52l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.292a.873.873 0 0 0-.52-1.255l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094a.873.873 0 0 0 .52-1.255l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a.873.873 0 0 0 1.255-.52z"/>
+                                    </svg>
+                                    <strong>Skrzynia biegów:</strong> @car.Transmission
+                                </p>
+                            }
+                            
+                            <div class="mb-3">
+                                <h4 class="text-primary mb-0">
+                                    @pricePerDay.ToString("F2") zł
+                                    <small class="text-muted fs-6">/ dzień</small>
+                                </h4>
+                            </div>
+                            
+                            <p class="card-text text-muted small">
+                                @description
+                            </p>
+                        </div>
+                        
+                        <div class="mt-auto">
+                            <a asp-controller="Reservations" asp-action="Create" asp-route-carId="@car.Id" class="btn btn-primary w-100">
+                                Zarezerwuj teraz
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
