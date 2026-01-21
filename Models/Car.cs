@@ -20,6 +20,6 @@ namespace CarReservationSystemApp
 
         public bool IsAvailable { get; set; } = true;
 
-        public ICollection<Reservation> Reservations { get; set; }
+        public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
     }
 }

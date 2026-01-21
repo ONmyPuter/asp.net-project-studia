@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using CarReservationSystemApp;
 
 namespace CarReservationSystemApp.Controllers
 {
+    [Authorize]
     public class ReservationsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -17,12 +20,26 @@ namespace CarReservationSystemApp.Controllers
         // LISTA
         public async Task<IActionResult> Index()
         {
-            // Pobierz wszystkie rezerwacje z załadowanymi samochodami
-            var reservations = await _context.Reservations
+            var query = _context.Reservations
                 .Include(r => r.Car)
+                .Include(r => r.User)
                 .OrderByDescending(r => r.From)
-                .ThenByDescending(r => r.Id)
-                .ToListAsync();
+                .ThenByDescending(r => r.Id);
+
+            IQueryable<Reservation> filteredQuery;
+            
+            // Admin sees all reservations, regular users see only their own
+            if (User.IsInRole("Admin"))
+            {
+                filteredQuery = query;
+            }
+            else
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                filteredQuery = query.Where(r => r.UserId == userId);
+            }
+
+            var reservations = await filteredQuery.ToListAsync();
 
             // Debug: sprawdź czy są rezerwacje
             var count = reservations.Count;
@@ -61,7 +78,12 @@ namespace CarReservationSystemApp.Controllers
                 }
             }
 
-            return View();
+            return View(new Reservation 
+            { 
+                CarId = carId ?? 0,
+                From = DateTime.Today,
+                To = DateTime.Today.AddDays(1)
+            });
         }
 
         // ZAPIS
@@ -113,6 +135,9 @@ namespace CarReservationSystemApp.Controllers
             {
                 try
                 {
+                    // Set the current user as the owner of this reservation
+                    reservation.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    
                     _context.Reservations.Add(reservation);
                     await _context.SaveChangesAsync();
                     

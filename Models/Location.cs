@@ -9,6 +9,6 @@ namespace CarReservationSystemApp
         [Required]
         public string City { get; set; }
 
-        public ICollection<Car> Cars { get; set; }
+        public ICollection<Car> Cars { get; set; } = new List<Car>();
     }
 }

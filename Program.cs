@@ -18,11 +18,12 @@ namespace CarReservationSystemApp
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // Identity
+            // Identity with Roles
             builder.Services.AddDefaultIdentity<IdentityUser>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
             })
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
             var app = builder.Build();
@@ -44,60 +45,45 @@ namespace CarReservationSystemApp
 
             app.MapRazorPages();
 
-            // Seed danych - dodaj przykładowe samochody jeśli baza jest pusta
+            // Seed data - roles, admin user, and sample cars
             using (var scope = app.Services.CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<ApplicationDbContext>();
+                var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                
                 context.Database.EnsureCreated();
                 
-                // Sprawdź i dodaj kolumny FuelType i Transmission, jeśli nie istnieją
-                var connection = context.Database.GetDbConnection();
-                connection.Open();
-                try
+                // Create roles if they don't exist
+                string[] roleNames = { "Admin", "User" };
+                foreach (var roleName in roleNames)
                 {
-                    using (var command = connection.CreateCommand())
+                    if (!roleManager.RoleExistsAsync(roleName).Result)
                     {
-                        // Sprawdź czy kolumna FuelType istnieje
-                        command.CommandText = "PRAGMA table_info(Cars)";
-                        using (var reader = command.ExecuteReader())
-                        {
-                            bool hasFuelType = false;
-                            bool hasTransmission = false;
-                            
-                            while (reader.Read())
-                            {
-                                var columnName = reader.GetString(1);
-                                if (columnName == "FuelType") hasFuelType = true;
-                                if (columnName == "Transmission") hasTransmission = true;
-                            }
-                            
-                            // Dodaj kolumnę FuelType jeśli nie istnieje
-                            if (!hasFuelType)
-                            {
-                                using (var addColumnCommand = connection.CreateCommand())
-                                {
-                                    addColumnCommand.CommandText = "ALTER TABLE Cars ADD COLUMN FuelType TEXT DEFAULT ''";
-                                    addColumnCommand.ExecuteNonQuery();
-                                }
-                            }
-                            
-                            // Dodaj kolumnę Transmission jeśli nie istnieje
-                            if (!hasTransmission)
-                            {
-                                using (var addColumnCommand = connection.CreateCommand())
-                                {
-                                    addColumnCommand.CommandText = "ALTER TABLE Cars ADD COLUMN Transmission TEXT DEFAULT ''";
-                                    addColumnCommand.ExecuteNonQuery();
-                                }
-                            }
-                        }
+                        roleManager.CreateAsync(new IdentityRole(roleName)).Wait();
                     }
                 }
-                finally
+                
+                // Create default admin user
+                var adminEmail = "admin@test.com";
+                var adminUser = userManager.FindByEmailAsync(adminEmail).Result;
+                if (adminUser == null)
                 {
-                    connection.Close();
+                    adminUser = new IdentityUser
+                    {
+                        UserName = adminEmail,
+                        Email = adminEmail,
+                        EmailConfirmed = true
+                    };
+                    var result = userManager.CreateAsync(adminUser, "Admin123!").Result;
+                    if (result.Succeeded)
+                    {
+                        userManager.AddToRoleAsync(adminUser, "Admin").Wait();
+                    }
                 }
                 
+                // Add sample cars if database is empty
                 if (!context.Cars.Any())
                 {
                     context.Cars.AddRange(

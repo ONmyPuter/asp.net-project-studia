@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarReservationSystemApp
@@ -13,7 +14,7 @@ namespace CarReservationSystemApp
             _context = context;
         }
 
-        // GET: /Cars
+        // GET: /Cars - Public: anyone can view cars
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
@@ -21,15 +22,17 @@ namespace CarReservationSystemApp
             return View(cars);
         }
 
-        // GET: /Cars/Create
+        // GET: /Cars/Create - Admin only
         [HttpGet("Create")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: /Cars/Create
+        // POST: /Cars/Create - Admin only
         [HttpPost("Create")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Car car)
         {

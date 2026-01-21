@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarReservationSystemApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class LocationsController : Controller
     {
         private readonly ApplicationDbContext _context;
