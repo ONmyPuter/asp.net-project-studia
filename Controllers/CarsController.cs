@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +19,9 @@ namespace CarReservationSystemApp
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var cars = await _context.Cars.ToListAsync();
+            var cars = await _context.Cars
+                .Include(c => c.CurrentLocation)
+                .ToListAsync();
             return View(cars);
         }
 
@@ -27,6 +30,7 @@ namespace CarReservationSystemApp
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
+            ViewBag.Locations = new SelectList(_context.Locations, "Id", "City");
             return View();
         }
 
@@ -44,6 +48,7 @@ namespace CarReservationSystemApp
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewBag.Locations = new SelectList(_context.Locations, "Id", "City", car.CurrentLocationId);
             TempData["ErrorMessage"] = "Wystąpiły błędy podczas dodawania samochodu. Sprawdź wprowadzone dane.";
             return View(car);
         }

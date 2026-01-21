@@ -20,6 +20,10 @@ namespace CarReservationSystemApp
 
         public bool IsAvailable { get; set; } = true;
 
+        // Current location of the car
+        public int? CurrentLocationId { get; set; }
+        public Location? CurrentLocation { get; set; }
+
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
     }
 }

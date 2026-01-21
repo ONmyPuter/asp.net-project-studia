@@ -54,6 +54,15 @@
                         <span asp-validation-for="Transmission" class="text-danger"></span>
                     </div>
 
+                    <div class="mb-3">
+                        <label asp-for="CurrentLocationId" class="form-label fw-bold">Lokalizacja</label>
+                        <select asp-for="CurrentLocationId" asp-items="@ViewBag.Locations" class="form-select form-select-lg">
+                            <option value="">-- Wybierz lokalizację --</option>
+                        </select>
+                        <small class="form-text text-muted">Wybierz lokalizację, w której znajduje się samochód</small>
+                        <span asp-validation-for="CurrentLocationId" class="text-danger"></span>
+                    </div>
+
                     <div class="form-check mb-4">
                         <input asp-for="IsAvailable" class="form-check-input" type="checkbox" checked />
                         <label class="form-check-label fw-bold" asp-for="IsAvailable">

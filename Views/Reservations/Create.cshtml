@@ -19,8 +19,28 @@
 
         <div class="card shadow-sm">
             <div class="card-body p-4">
-                <form asp-action="Create" method="post">
+                <form asp-action="Create" method="post" id="reservationForm">
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <!-- LOKALIZACJA ODBIORU -->
+                    <div class="mb-4">
+                        <label asp-for="PickupLocationId" class="form-label fw-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                                <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
+                                <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                            </svg>
+                            Lokalizacja odbioru
+                        </label>
+                        <select asp-for="PickupLocationId"
+                                asp-items="ViewBag.Locations"
+                                class="form-select form-select-lg"
+                                id="pickupLocationSelect"
+                                required>
+                            <option value="">-- Wybierz lokalizację odbioru --</option>
+                        </select>
+                        <small class="form-text text-muted">Wybierz lokalizację, z której chcesz odebrać samochód</small>
+                        <span asp-validation-for="PickupLocationId" class="text-danger"></span>
+                    </div>
 
                     <!-- SAMOCHÓD -->
                     <div class="mb-4">
@@ -30,9 +50,29 @@
                                 class="form-select form-select-lg"
                                 id="carSelect"
                                 required>
-                            <option value="">-- Wybierz samochód --</option>
+                            <option value="">-- Najpierw wybierz lokalizację --</option>
                         </select>
+                        <small class="form-text text-muted" id="carHint">Dostępne samochody w wybranej lokalizacji</small>
                         <span asp-validation-for="CarId" class="text-danger"></span>
+                    </div>
+
+                    <!-- LOKALIZACJA ZWROTU -->
+                    <div class="mb-4">
+                        <label asp-for="DropoffLocationId" class="form-label fw-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+                                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/>
+                            </svg>
+                            Lokalizacja zwrotu
+                        </label>
+                        <select asp-for="DropoffLocationId"
+                                asp-items="ViewBag.Locations"
+                                class="form-select form-select-lg"
+                                id="dropoffLocationSelect"
+                                required>
+                            <option value="">-- Wybierz lokalizację zwrotu --</option>
+                        </select>
+                        <small class="form-text text-muted">Wybierz lokalizację, w której chcesz zwrócić samochód</small>
+                        <span asp-validation-for="DropoffLocationId" class="text-danger"></span>
                     </div>
 
                     <!-- DATY -->
@@ -60,18 +100,41 @@
                         </div>
                     </div>
 
+                    <!-- UBEZPIECZENIE -->
+                    <div class="mb-4">
+                        <label asp-for="InsurancePolicyId" class="form-label fw-bold">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-check" viewBox="0 0 16 16">
+                                <path d="M5.338 1.59a61 61 0 0 0-2.837.856.48.48 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.7 10.7 0 0 0 2.287 2.233c.346.244.652.42.893.533q.18.085.293.118a1 1 0 0 0 .101.025 1 1 0 0 0 .1-.025q.114-.034.294-.118c.24-.113.547-.29.893-.533a10.7 10.7 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.8 11.8 0 0 1-2.517 2.453 7 7 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7 7 0 0 1-1.048-.625 11.8 11.8 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 63 63 0 0 1 5.072.56"/>
+                                <path d="M10.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
+                            </svg>
+                            Ubezpieczenie
+                        </label>
+                        <select asp-for="InsurancePolicyId"
+                                asp-items="ViewBag.InsurancePolicies"
+                                class="form-select form-select-lg"
+                                id="insuranceSelect"
+                                required>
+                            <option value="">-- Wybierz ubezpieczenie --</option>
+                        </select>
+                        <span asp-validation-for="InsurancePolicyId" class="text-danger"></span>
+                    </div>
+
                     <!-- INFORMACJE O REZERWACJI -->
                     <div class="card bg-light mb-4">
                         <div class="card-body">
                             <h5 class="card-title">Szczegóły rezerwacji</h5>
                             <div class="row">
-                                <div class="col-md-6 mb-2">
+                                <div class="col-md-4 mb-2">
                                     <strong>Liczba dni:</strong>
                                     <span id="daysCount" class="text-primary">-</span>
                                 </div>
-                                <div class="col-md-6 mb-2">
-                                    <strong>Szacunkowy koszt:</strong>
-                                    <span id="price" class="text-success fw-bold fs-5">-</span>
+                                <div class="col-md-4 mb-2">
+                                    <strong>Koszt wynajmu:</strong>
+                                    <span id="rentalPrice" class="text-success fw-bold">-</span>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <strong>Szacunkowy koszt całkowity:</strong>
+                                    <span id="totalPrice" class="text-success fw-bold fs-5">-</span>
                                 </div>
                             </div>
                         </div>
@@ -97,30 +160,73 @@
 
 @section Scripts {
     <script>
+        const pickupLocationSelect = document.getElementById("pickupLocationSelect");
+        const dropoffLocationSelect = document.getElementById("dropoffLocationSelect");
+        const carSelect = document.getElementById("carSelect");
         const fromDate = document.getElementById("fromDate");
         const toDate = document.getElementById("toDate");
-        const priceField = document.getElementById("price");
+        const insuranceSelect = document.getElementById("insuranceSelect");
         const daysCountField = document.getElementById("daysCount");
-        const carSelect = document.getElementById("carSelect");
+        const rentalPriceField = document.getElementById("rentalPrice");
+        const totalPriceField = document.getElementById("totalPrice");
+        const carHint = document.getElementById("carHint");
 
-        // Ceny samochodów (będą pobierane z serwera)
-        const carPrices = @Html.Raw(Json.Serialize(ViewBag.CarPrices ?? new Dictionary<int, decimal>()));
+        // Store car prices
+        let carPrices = {};
+        let currentCarPrice = @(ViewBag.SelectedCarPrice ?? 150);
 
-        // Pobierz cenę dla wybranego samochodu
-        function getCarPrice(carId) {
-            // Jeśli mamy cenę w ViewBag, użyj jej
-            @if (ViewBag.SelectedCarPrice != null)
-            {
-                <text>
-                if (carId == @Model.CarId) {
-                    return @ViewBag.SelectedCarPrice;
-                }
-                </text>
-            }
+        // Insurance prices
+        const insurancePrices = {
+            "1": 15.00,
+            "2": 35.00,
+            "3": 60.00
+        };
+
+        // Load cars for selected location
+        pickupLocationSelect.addEventListener("change", async function() {
+            const locationId = this.value;
             
-            // Domyślna cena (będzie obliczana po stronie serwera)
-            return 150;
-        }
+            if (!locationId) {
+                carSelect.innerHTML = '<option value="">-- Najpierw wybierz lokalizację --</option>';
+                carHint.textContent = "Dostępne samochody w wybranej lokalizacji";
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Reservations/GetCarsByLocation?locationId=${locationId}`);
+                const cars = await response.json();
+                
+                carSelect.innerHTML = '<option value="">-- Wybierz samochód --</option>';
+                carPrices = {};
+                
+                if (cars.length === 0) {
+                    carHint.textContent = "Brak dostępnych samochodów w tej lokalizacji";
+                } else {
+                    carHint.textContent = `Dostępnych samochodów: ${cars.length}`;
+                    cars.forEach(car => {
+                        const option = document.createElement("option");
+                        option.value = car.id;
+                        option.textContent = `${car.text} - ${car.price.toFixed(2)} zł/dzień`;
+                        carSelect.appendChild(option);
+                        carPrices[car.id] = car.price;
+                    });
+                }
+                
+                calculatePrice();
+            } catch (error) {
+                console.error("Error loading cars:", error);
+                carHint.textContent = "Błąd ładowania samochodów";
+            }
+        });
+
+        // Update car price when car changes
+        carSelect.addEventListener("change", function() {
+            const carId = this.value;
+            if (carId && carPrices[carId]) {
+                currentCarPrice = carPrices[carId];
+            }
+            calculatePrice();
+        });
 
         function calculatePrice() {
             if (fromDate.value && toDate.value && carSelect.value) {
@@ -128,7 +234,8 @@
                 const to = new Date(toDate.value);
 
                 if (to <= from) {
-                    priceField.textContent = "Nieprawidłowy zakres dat";
+                    rentalPriceField.textContent = "Nieprawidłowy zakres dat";
+                    totalPriceField.textContent = "-";
                     daysCountField.textContent = "-";
                     return;
                 }
@@ -137,22 +244,33 @@
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 
                 if (diffDays > 0) {
-                    const pricePerDay = getCarPrice(parseInt(carSelect.value));
-                    const totalPrice = diffDays * pricePerDay;
+                    const carId = carSelect.value;
+                    const pricePerDay = carPrices[carId] || currentCarPrice;
+                    const rentalCost = diffDays * pricePerDay;
+                    
+                    // Get insurance cost
+                    const insuranceId = insuranceSelect.value;
+                    const insurancePerDay = insurancePrices[insuranceId] || 0;
+                    const insuranceCost = diffDays * insurancePerDay;
+                    
+                    const totalCost = rentalCost + insuranceCost;
                     
                     daysCountField.textContent = diffDays + " " + (diffDays === 1 ? "dzień" : "dni");
-                    priceField.textContent = totalPrice.toFixed(2) + " zł";
+                    rentalPriceField.textContent = rentalCost.toFixed(2) + " zł";
+                    totalPriceField.textContent = totalCost.toFixed(2) + " zł";
                 } else {
-                    priceField.textContent = "-";
+                    rentalPriceField.textContent = "-";
+                    totalPriceField.textContent = "-";
                     daysCountField.textContent = "-";
                 }
             } else {
-                priceField.textContent = "-";
+                rentalPriceField.textContent = "-";
+                totalPriceField.textContent = "-";
                 daysCountField.textContent = "-";
             }
         }
 
-        // Ustaw minimalną datę końcową na dzień po dacie początkowej
+        // Set minimum end date based on start date
         fromDate.addEventListener("change", function() {
             if (fromDate.value) {
                 const from = new Date(fromDate.value);
@@ -167,9 +285,9 @@
         });
 
         toDate.addEventListener("change", calculatePrice);
-        carSelect.addEventListener("change", calculatePrice);
+        insuranceSelect.addEventListener("change", calculatePrice);
 
-        // Oblicz cenę przy załadowaniu strony
+        // Calculate price on page load if values exist
         if (fromDate.value && toDate.value && carSelect.value) {
             calculatePrice();
         }

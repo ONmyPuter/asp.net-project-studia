@@ -23,6 +23,9 @@ namespace CarReservationSystemApp.Controllers
             var query = _context.Reservations
                 .Include(r => r.Car)
                 .Include(r => r.User)
+                .Include(r => r.PickupLocation)
+                .Include(r => r.DropoffLocation)
+                .Include(r => r.InsurancePolicy)
                 .OrderByDescending(r => r.From)
                 .ThenByDescending(r => r.Id);
 
@@ -52,38 +55,38 @@ namespace CarReservationSystemApp.Controllers
         }
 
         // FORMULARZ
-        public IActionResult Create(int? carId = null)
+        public IActionResult Create(int? carId = null, int? pickupLocationId = null)
         {
-            ViewBag.Cars = _context.Cars
-                .Where(c => c.IsAvailable)
+            PopulateViewBagForCreate(carId, pickupLocationId);
+
+            var reservation = new Reservation 
+            { 
+                CarId = carId ?? 0,
+                PickupLocationId = pickupLocationId ?? 0,
+                DropoffLocationId = pickupLocationId ?? 0, // Default to same location
+                InsurancePolicyId = 1, // Default to Basic
+                From = DateTime.Today,
+                To = DateTime.Today.AddDays(1)
+            };
+
+            return View(reservation);
+        }
+
+        // API endpoint to get cars by location (for AJAX)
+        [HttpGet]
+        public JsonResult GetCarsByLocation(int locationId)
+        {
+            var cars = _context.Cars
+                .Where(c => c.IsAvailable && c.CurrentLocationId == locationId)
                 .Select(c => new
                 {
-                    c.Id,
-                    Display = c.Brand + " " + c.Model
-                })
-                .Select(c => new SelectListItem
-                {
-                    Value = c.Id.ToString(),
-                    Text = c.Display,
-                    Selected = carId.HasValue && c.Id == carId.Value
+                    id = c.Id,
+                    text = c.Brand + " " + c.Model,
+                    price = CarsController.GetPricePerDay(c)
                 })
                 .ToList();
 
-            if (carId.HasValue)
-            {
-                var car = _context.Cars.Find(carId.Value);
-                if (car != null)
-                {
-                    ViewBag.SelectedCarPrice = CarsController.GetPricePerDay(car);
-                }
-            }
-
-            return View(new Reservation 
-            { 
-                CarId = carId ?? 0,
-                From = DateTime.Today,
-                To = DateTime.Today.AddDays(1)
-            });
+            return Json(cars);
         }
 
         // ZAPIS
@@ -112,6 +115,23 @@ namespace CarReservationSystemApp.Controllers
                 ModelState.AddModelError("From", "Data rozpoczęcia nie może być w przeszłości.");
             }
 
+            // Walidacja lokalizacji
+            if (reservation.PickupLocationId <= 0)
+            {
+                ModelState.AddModelError("PickupLocationId", "Wybierz lokalizację odbioru.");
+            }
+
+            if (reservation.DropoffLocationId <= 0)
+            {
+                ModelState.AddModelError("DropoffLocationId", "Wybierz lokalizację zwrotu.");
+            }
+
+            // Walidacja ubezpieczenia
+            if (reservation.InsurancePolicyId <= 0)
+            {
+                ModelState.AddModelError("InsurancePolicyId", "Wybierz ubezpieczenie.");
+            }
+
             // Sprawdzenie czy samochód istnieje i jest dostępny
             var car = await _context.Cars.FindAsync(reservation.CarId);
             if (car == null)
@@ -121,6 +141,10 @@ namespace CarReservationSystemApp.Controllers
             else if (!car.IsAvailable)
             {
                 ModelState.AddModelError("CarId", "Wybrany samochód jest niedostępny.");
+            }
+            else if (car.CurrentLocationId != reservation.PickupLocationId)
+            {
+                ModelState.AddModelError("CarId", "Wybrany samochód nie jest dostępny w wybranej lokalizacji odbioru.");
             }
             else
             {
@@ -150,9 +174,37 @@ namespace CarReservationSystemApp.Controllers
                 }
             }
 
-            // Przywrócenie listy samochodów w przypadku błędu
-            ViewBag.Cars = _context.Cars
-                .Where(c => c.IsAvailable)
+            // Przywrócenie danych w przypadku błędu
+            PopulateViewBagForCreate(reservation.CarId, reservation.PickupLocationId);
+
+            return View(reservation);
+        }
+
+        // Helper method to populate ViewBag for Create view
+        private void PopulateViewBagForCreate(int? carId, int? pickupLocationId)
+        {
+            // Locations
+            ViewBag.Locations = new SelectList(_context.Locations, "Id", "City", pickupLocationId);
+
+            // Insurance policies
+            ViewBag.InsurancePolicies = _context.InsurancePolicies
+                .Where(i => i.IsActive)
+                .Select(i => new SelectListItem
+                {
+                    Value = i.Id.ToString(),
+                    Text = $"{i.PolicyType} - {i.PricePerDay:C}/dzień"
+                })
+                .ToList();
+
+            // Cars - filtered by location if specified
+            IQueryable<Car> carsQuery = _context.Cars.Where(c => c.IsAvailable);
+            
+            if (pickupLocationId.HasValue && pickupLocationId.Value > 0)
+            {
+                carsQuery = carsQuery.Where(c => c.CurrentLocationId == pickupLocationId.Value);
+            }
+
+            ViewBag.Cars = carsQuery
                 .Select(c => new
                 {
                     c.Id,
@@ -162,20 +214,18 @@ namespace CarReservationSystemApp.Controllers
                 {
                     Value = c.Id.ToString(),
                     Text = c.Display,
-                    Selected = c.Id == reservation.CarId
+                    Selected = carId.HasValue && c.Id == carId.Value
                 })
                 .ToList();
 
-            if (reservation.CarId > 0)
+            if (carId.HasValue && carId.Value > 0)
             {
-                var selectedCar = await _context.Cars.FindAsync(reservation.CarId);
-                if (selectedCar != null)
+                var car = _context.Cars.Find(carId.Value);
+                if (car != null)
                 {
-                    ViewBag.SelectedCarPrice = CarsController.GetPricePerDay(selectedCar);
+                    ViewBag.SelectedCarPrice = CarsController.GetPricePerDay(car);
                 }
             }
-
-            return View(reservation);
         }
 
         // Metoda sprawdzająca dostępność samochodu w danym terminie
