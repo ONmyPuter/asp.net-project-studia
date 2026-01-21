@@ -243,5 +243,92 @@ namespace CarReservationSystemApp.Controllers
 
             return !conflictingReservations;
         }
+
+        // SZCZEGÓŁY REZERWACJI - Admin only
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var reservation = await _context.Reservations
+                .Include(r => r.Car)
+                    .ThenInclude(c => c.CurrentLocation)
+                .Include(r => r.User)
+                .Include(r => r.PickupLocation)
+                .Include(r => r.DropoffLocation)
+                .Include(r => r.InsurancePolicy)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            return View(reservation);
+        }
+
+        // USUNIĘCIE REZERWACJI - Admin only (GET)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var reservation = await _context.Reservations
+                .Include(r => r.Car)
+                .Include(r => r.User)
+                .Include(r => r.PickupLocation)
+                .Include(r => r.DropoffLocation)
+                .Include(r => r.InsurancePolicy)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            return View(reservation);
+        }
+
+        // OZNACZENIE REZERWACJI JAKO ZAKOŃCZONEJ - Admin only
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> MarkAsFinished(int id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            reservation.IsFinished = true;
+            await _context.SaveChangesAsync();
+            
+            TempData["SuccessMessage"] = $"Rezerwacja #{id} została oznaczona jako zakończona.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // USUNIĘCIE REZERWACJI - Admin only (POST)
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation != null)
+            {
+                _context.Reservations.Remove(reservation);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = $"Rezerwacja #{id} została pomyślnie usunięta.";
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
+

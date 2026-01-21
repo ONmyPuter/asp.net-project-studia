@@ -1,0 +1,122 @@
+@model Reservation
+@using CarReservationSystemApp
+
+@{
+    ViewData["Title"] = $"Usuń rezerwację #{Model.Id}";
+    var duration = (Model.To.Date - Model.From.Date).Days;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0 text-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                    <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
+                    <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.553.553 0 0 1-1.1 0z"/>
+                </svg>
+                Usuń rezerwację
+            </h2>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                </svg>
+                Anuluj
+            </a>
+        </div>
+
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                    <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+                </svg>
+                Czy na pewno chcesz usunąć tę rezerwację?
+            </h4>
+            <p class="mb-0">Ta operacja jest nieodwracalna. Rezerwacja zostanie trwale usunięta z systemu.</p>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Szczegóły rezerwacji do usunięcia</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">ID Rezerwacji:</dt>
+                    <dd class="col-sm-8"><strong>#@Model.Id</strong></dd>
+
+                    <dt class="col-sm-4">Samochód:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Car != null)
+                        {
+                            <strong>@Model.Car.Brand @Model.Car.Model</strong>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Brak danych</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">Użytkownik:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.User != null)
+                        {
+                            <span class="badge bg-info text-dark">@Model.User.Email</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Brak danych</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">Termin:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-primary">@Model.From.Date.ToString("dd.MM.yyyy")</span>
+                        -
+                        <span class="badge bg-success">@Model.To.Date.ToString("dd.MM.yyyy")</span>
+                        <span class="text-muted">(@duration @(duration == 1 ? "dzień" : "dni"))</span>
+                    </dd>
+
+                    <dt class="col-sm-4">Lokalizacja odbioru:</dt>
+                    <dd class="col-sm-8">@(Model.PickupLocation?.City ?? "N/A")</dd>
+
+                    <dt class="col-sm-4">Lokalizacja zwrotu:</dt>
+                    <dd class="col-sm-8">@(Model.DropoffLocation?.City ?? "N/A")</dd>
+
+                    <dt class="col-sm-4">Ubezpieczenie:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.InsurancePolicy != null)
+                        {
+                            <span class="badge @(Model.InsurancePolicy.PolicyType == "Premium" ? "bg-warning text-dark" : Model.InsurancePolicy.PolicyType == "Standard" ? "bg-info" : "bg-secondary")">
+                                @Model.InsurancePolicy.PolicyType
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Brak</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a asp-action="Index" class="btn btn-secondary btn-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                    </svg>
+                    Anuluj
+                </a>
+                <button type="submit" class="btn btn-danger btn-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                    </svg>
+                    Potwierdź usunięcie
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

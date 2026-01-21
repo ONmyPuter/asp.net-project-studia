@@ -30,5 +30,7 @@ namespace CarReservationSystemApp
         // Insurance policy for this reservation
         public int InsurancePolicyId { get; set; }
         public InsurancePolicy? InsurancePolicy { get; set; }
+
+        public bool IsFinished { get; set; } = false;
     }
 }

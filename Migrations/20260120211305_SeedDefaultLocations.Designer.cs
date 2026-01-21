@@ -3,6 +3,7 @@ using System;
 using CarReservationSystemApp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarReservationSystemApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260120211305_SeedDefaultLocations")]
+    partial class SeedDefaultLocations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
@@ -171,9 +174,6 @@ namespace CarReservationSystemApp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("InsurancePolicyId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsFinished")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("PickupLocationId")

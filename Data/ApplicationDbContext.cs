@@ -77,6 +77,15 @@ namespace CarReservationSystemApp
                     IsActive = true
                 }
             );
+
+            // Seed default Polish city locations
+            modelBuilder.Entity<Location>().HasData(
+                new Location { Id = 1, City = "Warszawa" },
+                new Location { Id = 2, City = "Kraków" },
+                new Location { Id = 3, City = "Gdańsk" },
+                new Location { Id = 4, City = "Wrocław" },
+                new Location { Id = 5, City = "Poznań" }
+            );
         }
     }
 }

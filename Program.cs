@@ -87,17 +87,17 @@ namespace CarReservationSystemApp
                 if (!context.Cars.Any())
                 {
                     context.Cars.AddRange(
-                        new Car { Brand = "Toyota", Model = "Corolla", Seats = 5, FuelType = "Benzyna / Hybryda", Transmission = "Manualna / Automatyczna", IsAvailable = true },
-                        new Car { Brand = "Honda", Model = "Civic", Seats = 5, FuelType = "Benzyna / Hybrid", Transmission = "Manualna / Automatyczna", IsAvailable = true },
-                        new Car { Brand = "Volkswagen", Model = "Golf", Seats = 5, FuelType = "Benzyna / Diesel / e-Hybrid", Transmission = "Manualna / Automatyczna", IsAvailable = true },
-                        new Car { Brand = "Skoda", Model = "Octavia", Seats = 5, FuelType = "Benzyna / Diesel / e-Hybrid", Transmission = "Manualna / Automatyczna", IsAvailable = true },
-                        new Car { Brand = "Ford", Model = "Mustang", Seats = 4, FuelType = "Benzyna", Transmission = "Manualna / Automatyczna", IsAvailable = true },
-                        new Car { Brand = "Aston Martin", Model = "DB11", Seats = 4, FuelType = "Benzyna", Transmission = "Automatyczna", IsAvailable = true },
-                        new Car { Brand = "Audi", Model = "Q5", Seats = 5, FuelType = "Benzyna / Diesel / Plug-in Hybrid", Transmission = "Automatyczna", IsAvailable = true },
-                        new Car { Brand = "Tesla", Model = "Model 3", Seats = 5, FuelType = "Elektryczny", Transmission = "Automatyczna (jedbiegowa)", IsAvailable = true },
-                        new Car { Brand = "Saab", Model = "9-3", Seats = 5, FuelType = "Benzyna / Diesel*", Transmission = "Manualna / Automatyczna*", IsAvailable = true },
-                        new Car { Brand = "Mercedes-Benz", Model = "V-Class", Seats = 7, FuelType = "Diesel", Transmission = "Automatyczna", IsAvailable = true },
-                        new Car { Brand = "BMW", Model = "E36", Seats = 5, FuelType = "Benzyna / Diesel", Transmission = "Manualna / Automatyczna", IsAvailable = true }
+                        new Car { Brand = "Toyota", Model = "Corolla", Seats = 5, FuelType = "Benzyna / Hybryda", Transmission = "Manualna / Automatyczna", IsAvailable = true, CurrentLocationId = 1 }, // Warszawa
+                        new Car { Brand = "Honda", Model = "Civic", Seats = 5, FuelType = "Benzyna / Hybrid", Transmission = "Manualna / Automatyczna", IsAvailable = true, CurrentLocationId = 2 }, // Kraków
+                        new Car { Brand = "Volkswagen", Model = "Golf", Seats = 5, FuelType = "Benzyna / Diesel / e-Hybrid", Transmission = "Manualna / Automatyczna", IsAvailable = true, CurrentLocationId = 3 }, // Gdańsk
+                        new Car { Brand = "Skoda", Model = "Octavia", Seats = 5, FuelType = "Benzyna / Diesel / e-Hybrid", Transmission = "Manualna / Automatyczna", IsAvailable = true, CurrentLocationId = 4 }, // Wrocław
+                        new Car { Brand = "Ford", Model = "Mustang", Seats = 4, FuelType = "Benzyna", Transmission = "Manualna / Automatyczna", IsAvailable = true, CurrentLocationId = 5 }, // Poznań
+                        new Car { Brand = "Aston Martin", Model = "DB11", Seats = 4, FuelType = "Benzyna", Transmission = "Automatyczna", IsAvailable = true, CurrentLocationId = 1 }, // Warszawa
+                        new Car { Brand = "Audi", Model = "Q5", Seats = 5, FuelType = "Benzyna / Diesel / Plug-in Hybrid", Transmission = "Automatyczna", IsAvailable = true, CurrentLocationId = 2 }, // Kraków
+                        new Car { Brand = "Tesla", Model = "Model 3", Seats = 5, FuelType = "Elektryczny", Transmission = "Automatyczna (jedbiegowa)", IsAvailable = true, CurrentLocationId = 3 }, // Gdańsk
+                        new Car { Brand = "Saab", Model = "9-3", Seats = 5, FuelType = "Benzyna / Diesel*", Transmission = "Manualna / Automatyczna*", IsAvailable = true, CurrentLocationId = 4 }, // Wrocław
+                        new Car { Brand = "Mercedes-Benz", Model = "V-Class", Seats = 7, FuelType = "Diesel", Transmission = "Automatyczna", IsAvailable = true, CurrentLocationId = 5 }, // Poznań
+                        new Car { Brand = "BMW", Model = "E36", Seats = 5, FuelType = "Benzyna / Diesel", Transmission = "Manualna / Automatyczna", IsAvailable = true, CurrentLocationId = 1 } // Warszawa
                     );
                     context.SaveChanges();
                 }
